@@ -1,0 +1,27 @@
+name: Build Android .so
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/geode-sdk/build-sdk:latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build
+        run: |
+          mkdir build && cd build
+          cmake .. -DCMAKE_BUILD_TYPE=Release -DGEODE_TARGET=Android64
+          make -j$(nproc)
+
+      - name: Upload .so
+        uses: actions/upload-artifact@v4
+        with:
+          name: console-mod-android
+          path: build/*.so
