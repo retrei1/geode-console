@@ -1,0 +1,16 @@
+{
+    "geode": "5.7.1",
+    "id": "console.mod",
+    "name": "Console Mod",
+    "developer": "retrei1",
+    "description": "Adds a console to execute commands",
+    "settings": {
+        "fps-limit": {
+            "name": "FPS Limit",
+            "type": "int",
+            "default": 240,
+            "min": 60,
+            "max": 1000
+        }
+    }
+}
