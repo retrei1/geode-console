@@ -1,0 +1,38 @@
+name: Build Geode Mod (Manual)
+
+on:
+  workflow_dispatch:  # Запуск вручную
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y cmake build-essential
+
+      - name: Clone and setup Geode SDK manually
+        run: |
+          git clone --depth 1 https://github.com/geode-sdk/geode-sdk.git
+          export GEODE_SDK=$(pwd)/geode-sdk
+
+      - name: Configure CMake
+        run: |
+          mkdir -p build
+          cd build
+          cmake .. -DCMAKE_BUILD_TYPE=Release -DGEODE_TARGET=Android64 -DCMAKE_TOOLCHAIN_FILE=${NDK_PATH}/build/cmake/android.toolchain.cmake
+
+      - name: Build
+        run: |
+          cd build
+          make -j$(nproc)
+
+      - name: Upload .so file
+        uses: actions/upload-artifact@v4
+        with:
+          name: geode-mod-android
+          path: build/*.so
