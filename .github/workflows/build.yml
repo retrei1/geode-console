@@ -1,4 +1,4 @@
-name: Build Android .so (Manual)
+name: Build Android .so
 
 on:
   workflow_dispatch:
@@ -8,31 +8,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Clone repository manually
-        run: |
-          git clone https://github.com/${{ github.repository }}.git repo
-          cd repo
-          git checkout ${{ github.sha }}
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y cmake build-essential
-
-      - name: Clone Geode SDK
-        run: |
-          git clone --depth 1 https://github.com/geode-sdk/geode-sdk.git
-          echo "GEODE_SDK=$(pwd)/geode-sdk" >> $GITHUB_ENV
+      - name: Setup Geode
+        uses: geode-sdk/setup-geode-mod@main
+        with:
+          sdk: 5.7.1
+          target: Android64
 
       - name: Build
         run: |
-          cd repo
           mkdir build && cd build
-          cmake .. -DCMAKE_BUILD_TYPE=Release -DGEODE_TARGET=Android64 -DGEODE_SDK=${{ env.GEODE_SDK }}
+          cmake .. -DCMAKE_BUILD_TYPE=Release -DGEODE_TARGET=Android64
           make -j$(nproc)
 
       - name: Upload .so
         uses: actions/upload-artifact@v4
         with:
           name: geode-mod-android
-          path: repo/build/*.so
+          path: build/*.so
