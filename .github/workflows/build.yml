@@ -19,11 +19,16 @@ jobs:
           sudo apt update
           sudo apt install -y cmake build-essential
 
+      - name: Clone Geode SDK
+        run: |
+          git clone --depth 1 https://github.com/geode-sdk/geode-sdk.git
+          echo "GEODE_SDK=$(pwd)/geode-sdk" >> $GITHUB_ENV
+
       - name: Build
         run: |
           cd repo
           mkdir build && cd build
-          cmake .. -DCMAKE_BUILD_TYPE=Release -DGEODE_TARGET=Android64
+          cmake .. -DCMAKE_BUILD_TYPE=Release -DGEODE_TARGET=Android64 -DGEODE_SDK=${{ env.GEODE_SDK }}
           make -j$(nproc)
 
       - name: Upload .so
