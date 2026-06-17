@@ -11,16 +11,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Geode
-        uses: geode-sdk/setup-geode-mod@main
-        with:
-          sdk: 5.7.1
-          target: Android64
+      - name: Clone Geode SDK
+        run: |
+          git clone https://github.com/geode-sdk/geode-sdk.git /opt/geode-sdk
+          echo "GEODE_SDK=/opt/geode-sdk" >> $GITHUB_ENV
 
       - name: Build
         run: |
           mkdir build && cd build
-          cmake .. -DCMAKE_BUILD_TYPE=Release -DGEODE_TARGET=Android64
+          cmake .. -DCMAKE_BUILD_TYPE=Release -DGEODE_TARGET=Android64 -DGEODE_SDK=${{ env.GEODE_SDK }}
           make -j$(nproc)
 
       - name: Upload .so
